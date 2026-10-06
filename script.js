@@ -4,26 +4,13 @@ import {
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
 
 const video = document.getElementById("video");
-const text = document.getElementById("text");
+const cursor = document.getElementById("cursor");
 
 
-// -------------------------
-// Start
-// -------------------------
-
-text.textContent = "Loading MediaPipe...";
-
-
-// -------------------------
 // Load MediaPipe
-// -------------------------
-
 const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
 );
-
-text.textContent = "Loading hand model...";
-
 
 const handLandmarker = await HandLandmarker.createFromOptions(
     vision,
@@ -39,13 +26,7 @@ const handLandmarker = await HandLandmarker.createFromOptions(
 );
 
 
-text.textContent = "Starting camera...";
-
-
-// -------------------------
-// Camera
-// -------------------------
-
+// Start camera
 const stream = await navigator.mediaDevices.getUserMedia({
     video: true
 });
@@ -53,19 +34,11 @@ const stream = await navigator.mediaDevices.getUserMedia({
 video.srcObject = stream;
 
 
-// Wait for the video to actually have frames
+// Wait until video is ready
 video.addEventListener("loadeddata", () => {
-
-    text.textContent = "No hand detected";
-
     detect();
-
 });
 
-
-// -------------------------
-// MediaPipe detection
-// -------------------------
 
 function detect() {
 
@@ -79,17 +52,19 @@ function detect() {
 
         const hand = results.landmarks[0];
 
-        // Landmark 8 = index fingertip
+        // Index fingertip
         const indexTip = hand[8];
 
-        text.textContent =
-            "Index X: " + indexTip.x.toFixed(3) +
-            " | Index Y: " + indexTip.y.toFixed(3);
+        // Mirror X because the camera is mirrored
+        const x = 1 - indexTip.x;
+        const y = indexTip.y;
 
-    } else {
+        // Convert 0–1 coordinates to pixels
+        const cursorX = x * 190;
+        const cursorY = y * 190;
 
-        text.textContent = "No hand detected";
-
+        cursor.style.left = cursorX + "px";
+        cursor.style.top = cursorY + "px";
     }
 
 
