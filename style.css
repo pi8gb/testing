@@ -1,5 +1,16 @@
-#video {
-    transform: scaleX(-1);
-    width: 640px;
-    max-width: 100%;
+
+#area {
+    position: relative;
+    height: 200px;
+    width: 200px;
+    border: 2px solid;
+}
+
+#cursor {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid;
+    border-radius: 50%;
+    background-color: blue;
 }
