@@ -1,16 +1,18 @@
+#video {
+    width: 300px;
+}
 
 #area {
     position: relative;
-    height: 200px;
     width: 200px;
-    border: 2px solid;
+    height: 200px;
+    border: 2px solid black;
 }
 
 #cursor {
     position: absolute;
     width: 10px;
     height: 10px;
-    border: 1px solid;
     border-radius: 50%;
-    background-color: blue;
+    background: blue;
 }
