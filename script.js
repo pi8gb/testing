@@ -3,11 +3,11 @@ import {
     FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
 
+const video = document.getElementById("video");
+const text = document.getElementById("text");
 
-// -------------------------
-// 1. Load MediaPipe
-// -------------------------
 
+// Load MediaPipe
 const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
 );
@@ -21,24 +21,12 @@ const handLandmarker = await HandLandmarker.createFromOptions(
         },
 
         runningMode: "VIDEO",
-
-        numHands: 2
+        numHands: 1
     }
 );
 
 
-// -------------------------
-// 2. Get HTML elements
-// -------------------------
-
-const video = document.getElementById("video");
-const text = document.getElementById("text");
-
-
-// -------------------------
-// 3. Start camera
-// -------------------------
-
+// Start camera
 const stream = await navigator.mediaDevices.getUserMedia({
     video: true
 });
@@ -46,9 +34,11 @@ const stream = await navigator.mediaDevices.getUserMedia({
 video.srcObject = stream;
 
 
-// -------------------------
-// 4. Detect hands
-// -------------------------
+// Wait until video is ready
+video.addEventListener("loadeddata", () => {
+    detect();
+});
+
 
 function detect() {
 
@@ -57,34 +47,24 @@ function detect() {
         performance.now()
     );
 
-    console.log(results);
 
-
-    // Check if MediaPipe found a hand
     if (results.landmarks.length > 0) {
 
-        // First detected hand
         const hand = results.landmarks[0];
 
-        // Index fingertip = landmark 8
+        // Landmark 8 = index fingertip
         const indexTip = hand[8];
 
-        // Show coordinates
         text.textContent =
-            "Index Finger X = " + indexTip.x.toFixed(3) +
-            " | Y = " + indexTip.y.toFixed(3);
-    }
-    else {
+            "X: " + indexTip.x.toFixed(3) +
+            " | Y: " + indexTip.y.toFixed(3);
 
-        // No hand detected
+    } else {
+
         text.textContent = "No hand detected";
+
     }
 
 
-    // Run detect() again on the next frame
     requestAnimationFrame(detect);
 }
-
-
-// Start detection
-detect();
