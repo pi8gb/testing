@@ -70,3 +70,5 @@ function detect() {
 
     requestAnimationFrame(detect);
 }
+
+setInterval(detect, 50);
