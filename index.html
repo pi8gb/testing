@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MediaPipe Hand Tracking</title>
+    <title>Hand Cursor</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <video id="video" autoplay playsinline></video>
+    <video id="video" autoplay playsinline style="display: none;"></video>
 
-    <p id="text">Loading...</p>
+    <div id="area">
+        <div id="cursor"></div>
+    </div>
 
     <script type="module" src="script.js"></script>
 
