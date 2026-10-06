@@ -5,10 +5,12 @@ import {
 
 const video = document.getElementById("video");
 const cursor = document.getElementById("cursor");
+const status = document.getElementById("status");
 
 async function main() {
 
-    // Load MediaPipe
+    status.textContent = "Loading MediaPipe...";
+
     const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
     );
@@ -25,23 +27,17 @@ async function main() {
         }
     );
 
-    // Start camera
+    status.textContent = "Starting camera...";
+
     const stream = await navigator.mediaDevices.getUserMedia({
         video: true
     });
 
     video.srcObject = stream;
 
-    // Actually start the video
     await video.play();
 
-    // Wait until we have a usable video frame
-    while (video.readyState < 2) {
-        await new Promise(resolve => requestAnimationFrame(resolve));
-    }
-
-    detect();
-
+    status.textContent = "Camera ready";
 
     function detect() {
 
@@ -52,25 +48,29 @@ async function main() {
 
         if (results.landmarks.length > 0) {
 
-            const hand = results.landmarks[0];
+            status.textContent = "HAND DETECTED";
 
-            // Landmark 8 = index fingertip
-            const indexTip = hand[8];
+            const indexTip = results.landmarks[0][8];
 
-            // Mirror X
-            const x = 1 - indexTip.x;
-            const y = indexTip.y;
+            // Convert MediaPipe 0-1 coordinates to 200px
+            const x = (1 - indexTip.x) * 190;
+            const y = indexTip.y * 190;
 
-            // 200px area, 10px cursor
-            const cursorX = x * 190;
-            const cursorY = y * 190;
+            cursor.style.left = `${x}px`;
+            cursor.style.top = `${y}px`;
 
-            cursor.style.left = cursorX + "px";
-            cursor.style.top = cursorY + "px";
+        } else {
+
+            status.textContent = "NO HAND";
         }
 
         requestAnimationFrame(detect);
     }
+
+    detect();
 }
 
-main();
+main().catch(error => {
+    console.error(error);
+    status.textContent = "ERROR: " + error.message;
+});
