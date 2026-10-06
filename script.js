@@ -7,10 +7,23 @@ const video = document.getElementById("video");
 const text = document.getElementById("text");
 
 
+// -------------------------
+// Start
+// -------------------------
+
+text.textContent = "Loading MediaPipe...";
+
+
+// -------------------------
 // Load MediaPipe
+// -------------------------
+
 const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
 );
+
+text.textContent = "Loading hand model...";
+
 
 const handLandmarker = await HandLandmarker.createFromOptions(
     vision,
@@ -26,7 +39,13 @@ const handLandmarker = await HandLandmarker.createFromOptions(
 );
 
 
-// Start camera
+text.textContent = "Starting camera...";
+
+
+// -------------------------
+// Camera
+// -------------------------
+
 const stream = await navigator.mediaDevices.getUserMedia({
     video: true
 });
@@ -34,11 +53,19 @@ const stream = await navigator.mediaDevices.getUserMedia({
 video.srcObject = stream;
 
 
-// Wait until video is ready
+// Wait for the video to actually have frames
 video.addEventListener("loadeddata", () => {
+
+    text.textContent = "No hand detected";
+
     detect();
+
 });
 
+
+// -------------------------
+// MediaPipe detection
+// -------------------------
 
 function detect() {
 
@@ -56,8 +83,8 @@ function detect() {
         const indexTip = hand[8];
 
         text.textContent =
-            "X: " + indexTip.x.toFixed(3) +
-            " | Y: " + indexTip.y.toFixed(3);
+            "Index X: " + indexTip.x.toFixed(3) +
+            " | Index Y: " + indexTip.y.toFixed(3);
 
     } else {
 
