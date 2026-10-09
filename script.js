@@ -1,4 +1,4 @@
-```js
+
 import {
     HandLandmarker,
     FilesetResolver
@@ -67,4 +67,4 @@ function detect() {
 }
 
 startCamera();
-```
+
